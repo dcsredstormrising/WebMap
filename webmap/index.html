@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- Mapbox -->
+    <link rel="icon" href="//img1.wsimg.com/isteam/ip/d837f339-0c70-45ad-8c5c-4614e8fe41cf/favicon/a71a660b-037f-45e6-b5bc-8bbbb4f12562.png/:/rs=w:64,h:64,m" sizes="64x64">
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
+    <style>        
+        body { margin:0; padding:0; }
+        #map canvas {cursor: crosshair;}
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        .mapboxgl-popup {
+        max-width: 400px;
+            opacity: 0.89;
+        font: 12px/14px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        }
+        .mapboxgl-popup-content {
+            color: #2f2f2f;
+            opacity: 0.89;
+        }
+        
+        .nopadding {
+        padding: 0 !important;
+        margin: 0 !important;
+        }
+        .distance-container {
+        position: absolute;
+        bottom: 100px;
+        left: 10px;
+        z-index: 1;
+        }
+        .distance-container > * {
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        font-size: 11px;
+        line-height: 18px;
+        display: block;
+        margin: 0;
+        padding: 5px 10px;
+        border-radius: 3px;
+        }
+        #coord-info {
+        display: block;
+        position: absolute;
+        margin: 0px auto;
+        bottom: 30px;
+        left: 10px;
+        padding: 10px;
+        border: none;
+        border-radius: 3px;
+        font-size: 12px;
+        color: #fff;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1;
+        }
+    </style>
+    <title>Red Storm Rising :: LiveMap</title>
+  </head>
+  <body>
+    <!-- map -->
+    <div id='map'></div>
+    <div id="distance" class="distance-container"></div>
+    <pre id="coord-info"></pre>
+    <script src="https://npmcdn.com/@turf/turf@5.1.6/turf.min.js"></script>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZW5naW5lMDc1NSIsImEiOiJjazMyY2NiNnkwaWpjM21wbXplcmk5azh5In0.XoHRgaAQgpCbLaqcBru51g';
+        var bounds = [
+            [35.580307, 39.103504], // Southwest coordinates
+            [48.030353, 46.359388]  // Northeast coordinates
+        ];
+    
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/dark-v10',
+            center: [34.6573,35.69053],
+            zoom: 6.5,
+    
+        });
+    
+        var size = 200;
+    
+        var pulsingDot = {
+            width: size,
+            height: size,
+            data: new Uint8Array(size * size * 4),
+    
+            // get rendering context for the map canvas when layer is added to the map
+            onAdd: function() {
+                var canvas = document.createElement('canvas');
+                canvas.width = this.width;
+                canvas.height = this.height;
+                this.context = canvas.getContext('2d');
+            },
+    
+            // called once before every frame where the icon will be used
+            render: function() {
+                var duration = 1000;
+                var t = (performance.now() % duration) / duration;
+    
+                var radius = size / 4 * 0.3;
+                var outerRadius = size / 4 * 0.7 * t + radius;
+                var context = this.context;
+    
+                // draw outer circle
+                context.clearRect(0, 0, this.width, this.height);
+                context.beginPath();
+                context.arc(this.width / 2, this.height / 2, outerRadius, 0, Math.PI * 2);
+                context.fillStyle = 'rgba(255, 200, 200,' + (1 - t) + ')';
+                context.fill();
+    
+                // draw inner circle
+                context.beginPath();
+                context.arc(this.width / 2, this.height / 2, radius, 0, Math.PI * 2);
+                context.fillStyle = 'rgba(255, 100, 100, 1)';
+                context.strokeStyle = 'white';
+                context.lineWidth = 2 + 4 * (1 - t);
+                context.fill();
+                context.stroke();
+    
+                // update this image's data with data from the canvas
+                this.data = context.getImageData(0, 0, this.width, this.height).data;
+                // continuously repaint the map, resulting in the smooth animation of the dot
+                map.triggerRepaint();
+                // return `true` to let the map know that the image was updated
+                return true;
+            }
+        };
+    
+        var pulsingDot1 = {
+            width: size,
+            height: size,
+            data: new Uint8Array(size * size * 4),
+            // get rendering context for the map canvas when layer is added to the map
+            onAdd: function() {
+                var canvas = document.createElement('canvas');
+                canvas.width = this.width;
+                canvas.height = this.height;
+                this.context = canvas.getContext('2d');
+            },
+            // called once before every frame where the icon will be used
+            render: function() {
+                var duration = 1000;
+                var t = (performance.now() % duration) / duration;
+                var radius = size / 4 * 0.3;
+                var outerRadius = size / 4 * 0.7 * t + radius;
+                var context = this.context;
+                // draw outer circle
+                context.clearRect(0, 0, this.width, this.height);
+                context.beginPath();
+                context.arc(this.width / 2, this.height / 2, outerRadius, 0, Math.PI * 2);
+                context.fillStyle = 'rgba(65, 105, 225,' + (1 - t) + ')';
+                context.fill();
+                // draw inner circle
+                context.beginPath();
+                context.arc(this.width / 2, this.height / 2, radius, 0, Math.PI * 2);
+                context.fillStyle = 'rgba(65, 105, 225, 1)';
+                context.strokeStyle = 'white';
+                context.lineWidth = 2 + 4 * (1 - t);
+                context.fill();
+                context.stroke();
+                // update this image's data with data from the canvas
+                this.data = context.getImageData(0, 0, this.width, this.height).data;
+                // continuously repaint the map, resulting in the smooth animation of the dot
+                map.triggerRepaint();
+                // return `true` to let the map know that the image was updated
+                return true;
+            }
+        };
+    
+        var pulsingDot2 = {
+            width: size,
+            height: size,
+            data: new Uint8Array(size * size * 4),
+            // get rendering context for the map canvas when layer is added to the map
+            onAdd: function() {
+                var canvas = document.createElement('canvas');
+                canvas.width = this.width;
+                canvas.height = this.height;
+                this.context = canvas.getContext('2d');
+            },
+            // called once before every frame where the icon will be used
+            render: function() {
+                var duration = 1000;
+                var t = (performance.now() % duration) / duration;
+                var radius = size / 4 * 0.3;
+                var outerRadius = size / 4 * 0.7 * t + radius;
+                var context = this.context;
+                // draw outer circle
+                context.clearRect(0, 0, this.width, this.height);
+                context.beginPath();
+                context.arc(this.width / 2, this.height / 2, outerRadius, 0, Math.PI * 2);
+                context.fillStyle = 'rgba(200, 255, 200,' + (1 - t) + ')';
+                context.fill();
+                // draw inner circle
+                context.beginPath();
+                context.arc(this.width / 2, this.height / 2, radius, 0, Math.PI * 2);
+                context.fillStyle = 'rgb(100,255,100)';
+                context.strokeStyle = 'white';
+                context.lineWidth = 2 + 4 * (1 - t);
+                context.fill();
+                context.stroke();
+                // update this image's data with data from the canvas
+                this.data = context.getImageData(0, 0, this.width, this.height).data;
+                // continuously repaint the map, resulting in the smooth animation of the dot
+                map.triggerRepaint();
+                // return `true` to let the map know that the image was updated
+                return true;
+            }
+        };
+    
+        var farpdot = {
+            width: size,
+            height: size,
+            data: new Uint8Array(size * size * 4),
+            // get rendering context for the map canvas when layer is added to the map
+            onAdd: function() {
+                var canvas = document.createElement('canvas');
+                canvas.width = this.width;
+                canvas.height = this.height;
+                this.context = canvas.getContext('2d');
+            },
+            // called once before every frame where the icon will be used
+            render: function() {
+                var duration = 1000;
+                var t = (performance.now() % duration) / duration;
+                var radius = size / 4 * 0.3;
+                var outerRadius = size / 4 * 0.7 * t + radius;
+                var context = this.contex
+                // draw inner circle
+                context.beginPath();
+                context.rect(this.width / 2, this.height / 2, 12, 12);
+                context.fillStyle = 'rgba(150, 000, 150, 1)';
+                context.strokeStyle = 'black';
+                context.lineWidth = 4;
+                context.fill();
+                context.stroke();
+                // update this image's data with data from the canvas
+                this.data = context.getImageData(0, 0, this.width, this.height).data;
+                // continuously repaint the map, resulting in the smooth animation of the dot
+                map.triggerRepaint();
+                // return `true` to let the map know that the image was updated
+                return true;
+            }
+        };
+       
+        var distanceContainer = document.getElementById('distance');
+ 
+        // GeoJSON object to hold our measurement features
+        var geoPoints = {
+        'type': 'FeatureCollection',
+        'features': []
+        };
+        
+        // Used to draw a line between points
+        var linestring = {
+        'type': 'Feature',
+        'geometry': {
+        'type': 'LineString',
+        'coordinates': []
+        }
+        };
+    
+        function buildFilter(arr) {
+        var filter = ['in', 'baseName'];
+        if (arr.length === 0) {
+            return filter;
+        }
+        for(var i = 0; i < arr.length; i += 1) {
+            filter.push(arr[i]);
+        }
+        return filter;
+    }
+    
+    
+        map.on('load', function () {
+            map.addImage('pulsing-dot', pulsingDot, { pixelRatio: 2 });
+            map.addImage('pulsing-dot1', pulsingDot1, { pixelRatio: 2 });
+            map.addImage('pulsing-dot2', pulsingDot2, { pixelRatio: 2 });
+            map.addImage('farpdot',farpdot,{pixelRatio: 2});
+            var url = "http://127.0.0.1:9595/api/bases";
+            $.getJSON(url, dataReady);
+            function dataReady( data ) {
+            var blueBaseFilter = buildFilter(data.blueOwnership);
+            var redBaseFilter = buildFilter(data.redOwnership);
+			var neutBaseFilter = buildFilter(data.noOwnership);
+            var url = 'geo/geolocs.json';
+            //airbases
+            map.addSource('geolocs', { type: 'geojson', data: url });
+            map.addLayer({'id': 'blue-airbases','type': 'symbol','source': 'geolocs', "filter":blueBaseFilter,"layout":{"icon-image":"pulsing-dot1","icon-allow-overlap":true,"icon-ignore-placement":true,"text-allow-overlap":true,"text-field":["format",["upcase",["get","cap"]],{"font-scale":0.8},"\n",{},["downcase",["get","uncap"]],{"font-scale":0.6}],"text-font":["Open Sans Semibold","Arial Unicode MS Bold"],"text-offset":[0,0.6],"text-anchor":"top"}});
+            map.addLayer({'id': 'red-airbases','type': 'symbol','source': 'geolocs', "filter":redBaseFilter,"layout":{"icon-image":"pulsing-dot","icon-allow-overlap":true,"icon-ignore-placement":true,"text-allow-overlap":true,"text-field":["format",["upcase",["get","cap"]],{"font-scale":0.8},"\n",{},["downcase",["get","uncap"]],{"font-scale":0.6}],"text-font":["Open Sans Semibold","Arial Unicode MS Bold"],"text-offset":[0,0.6],"text-anchor":"top"}});
+            map.addLayer({'id': 'neutral-airbases','type': 'symbol','source': 'geolocs',"filter":neutBaseFilter ,"layout":{"icon-image":"pulsing-dot2","icon-allow-overlap":true,"icon-ignore-placement":true,"text-allow-overlap":true,"text-field":["format",["upcase",["get","cap"]],{"font-scale":0.8},"\n",{},["downcase",["get","uncap"]],{"font-scale":0.6}],"text-font":["Open Sans Semibold","Arial Unicode MS Bold"],"text-offset":[0,0.6],"text-anchor":"top"}});
+            //farps
+            map.addSource('farplocs', { type: 'geojson', data: url2});
+            map.addLayer({'id': 'farps',type:'symbol','source':'farplocs',"layout":{"icon-image":"farpdot","icon-allow-overlap":true,"icon-ignore-placement":true,"text-allow-overlap":true,"text-field":["format",["upcase",["get","cap"]],{"font-scale":0.8},"\n",{},["downcase",["get","uncap"]],{"font-scale":0.6}],"text-font":["Open Sans Semibold","Arial Unicode MS Bold"],"text-offset":[0,0.6],"text-anchor":"top"}});
+            };
+            
+            map.addSource('geoPoints', {
+            'type': 'geojson',
+            'data': geoPoints
+            });
+            
+            // Add styles to the map
+            map.addLayer({
+            id: 'measure-points',
+            type: 'circle',
+            source: 'geoPoints',
+            paint: {
+            'circle-radius': 5,
+            'circle-color': '#ffffff'
+            },
+            filter: ['in', '$type', 'Point']
+            });
+            map.addLayer({
+            id: 'measure-lines',
+            type: 'line',
+            source: 'geoPoints',
+            layout: {
+            'line-cap': 'round',
+            'line-join': 'round'
+            },
+            paint: {
+            'line-color': '#ffffff',
+            'line-width': 2.5
+            },
+            filter: ['in', '$type', 'LineString']
+            });
+            
+            map.on('click', function(e) {
+                if (event.ctrlKey) {
+
+            var features = map.queryRenderedFeatures(e.point, {
+            layers: ['measure-points']
+            });
+            
+            // Remove the linestring from the group
+            // So we can redraw it based on the points collection
+            if (geoPoints.features.length > 1) geoPoints.features.pop();
+            
+            // Clear the Distance container to populate it with a new value
+            distanceContainer.innerHTML = '';
+            
+            // If a feature was clicked, remove it from the map
+            if (features.length) {
+            var id = features[0].properties.id;
+            geoPoints.features = geoPoints.features.filter(function(point) {
+            return point.properties.id !== id;
+            });
+            } else {
+            var point = {
+            'type': 'Feature',
+            'geometry': {
+            'type': 'Point',
+            'coordinates': [e.lngLat.lng, e.lngLat.lat]
+            },
+            'properties': {
+            'id': String(new Date().getTime())
+            }
+            };
+            
+            geoPoints.features.push(point);
+            }
+            
+            if (geoPoints.features.length > 1) {
+            linestring.geometry.coordinates = geoPoints.features.map(function(
+            point
+            ) {
+            return point.geometry.coordinates;
+            });
+            
+            geoPoints.features.push(linestring);
+            
+            // Populate the distanceContainer with total distance
+            var value = document.createElement('pre');
+            var lengthMeasured = turf.length(linestring)*0.539957;
+            value.textContent =
+            'Total distance: ' +
+            lengthMeasured.toFixed(2) +
+            'nm';
+            distanceContainer.appendChild(value);
+            }
+            
+            map.getSource('geoPoints').setData(geoPoints);
+            }});
+
+        });
+
+        function deg_to_dms (deg) {
+            var d = Math.floor (deg);
+            var minfloat = (deg-d)*60;
+            var m = Math.floor(minfloat);
+            var secfloat = (minfloat-m)*60;
+            var s = Math.round(secfloat);
+            // After rounding, the seconds might become 60. These two
+            // if-tests are not necessary if no rounding is done.
+            if (s==60) {
+                m++;
+                s=0;
+            }
+            if (m==60) {
+                d++;
+                m=0;
+            }
+            return (d + "\xB0" + m + "\'" + s + "\"");
+        }
+
+        function deg_to_ddm (deg) {
+            var d = Math.floor (deg);
+            var minfloat = (deg-d)*60;
+            var m = minfloat;
+            // After rounding, the seconds might become 60. These two
+            // if-tests are not necessary if no rounding is done.
+            if (m==60) {
+                d++;
+                m=0;
+            }
+            return ("" + d + "\xB0" + m);
+        }
+
+
+        map.on('mousemove', function(e) {
+        var features = map.queryRenderedFeatures(e.point, {
+        layers: ['measure-points']
+        });
+        // UI indicator for clicking/hovering a point on the map
+        map.getCanvas().style.cursor = features.length
+        ? 'pointer'
+        : 'crosshair';
+
+
+        console.log();
+
+        document.getElementById('coord-info').innerHTML =
+        JSON.stringify(e.lngLat.lat).substring(0,8) + '\xB0  ' + JSON.stringify(e.lngLat.lng).substring(0,8) + '\xB0<br />' + 
+        deg_to_ddm(e.lngLat.lat).substring(0,9) + '\' ' + deg_to_ddm(e.lngLat.lng).substring(0,9) + '\' <br />' +
+        deg_to_dms(e.lngLat.lat) + ' ' + deg_to_dms(e.lngLat.lng) ;
+        });
+
+
+
+        map.on('click', 'blue-airbases', function(e){
+
+            if (event.ctrlKey) {}else{
+                var coordinates = e.features[0].geometry.coordinates.slice();
+                var description = e.features[0].properties.description;
+                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                }
+                $.getJSON("http://127.0.0.1:9595/api/bases/detail/"+e.features[0].properties.baseName, function(data) {
+                    // JSON result in `data` variable
+                console.log(data);
+                    new mapboxgl.Popup()
+                        .setLngLat(coordinates)
+                        .setHTML("<h3>"+data.name+"</h3><p>Status: "+data.status+"<br>Slots: "+data.slots+"</p>")
+                        .addTo(map);
+                });
+        }});
+
+        map.on('click', 'red-airbases', function(e){
+
+            if (event.ctrlKey) {}else{
+                var coordinates = e.features[0].geometry.coordinates.slice();
+                var description = e.features[0].properties.description;
+                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                }
+                $.getJSON("http://127.0.0.1:9595/api/bases/detail/"+e.features[0].properties.baseName, function(data) {
+                    // JSON result in `data` variable
+                    console.log(data);
+                    new mapboxgl.Popup({ closeOnClick: true})
+                        .setLngLat(coordinates)
+                        .setHTML("<h3>"+data.name+"</h3><p>Status: "+data.status+"<br>Slots: "+data.slots+"</p>")
+                        .addTo(map);
+                });
+            }});
+    
+    </script>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <a class="navbar-brand" href="https://redstormrising.net">
+        <img src="/img/logo.png" width="30" height="30" class="d-inline-block align-top" alt="">
+    </a>
+
+    <div class="collapse navbar-collapse" id="navbarColor01">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <button type="button" style="opacity: 0.5;" onclick="$('#playtoast').toast('show')" class="btn btn-dark">Player List</button>
+        </li>
+        <li class="nav-item">
+            <button type="button" style="opacity: 0.5;" onclick="$('#commstoast').toast('show')" class="btn btn-dark">Help</button>
+        </li>
+        <li class="nav-item">
+            <button type="button" style="opacity: 0.5;" data-toggle="modal" data-target="#commsModalBlue" class="btn btn-dark">Blue comms</button>
+        </li>
+        <li class="nav-item">
+            <button type="button" style="opacity: 0.5;" data-toggle="modal" data-target="#commsModalRed" class="btn btn-dark">Red comms</button>
+        </li>
+        <li class="nav-item">
+          <button type="button" style="opacity: 0.5;" onclick="window.open('https://discord.gg/AptRj9p', '_blank');" class="btn btn-dark">Discord</button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+<div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
+    <!-- Position it -->
+    <div style="position: absolute; top: 0; right: 0;">
+
+        <div class="toast" style="width: 300px; opacity: 0.4;" role="alert" aria-live="assertive" aria-atomic="true" id="playtoast" data-autohide="false">
+        <div class="toast-header">
+            <strong class="mr-auto">Players Online: <a id="bluecount">0</a> vs <a id="redcount">0</a></strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body nopadding">
+            <table class="table table-dark"><tbody id="team"> </tbody>
+            </table>
+        </div>
+        </div>
+
+    
+        <div  class="toast" style="width: 300px; opacity: 0.4;" role="alert" aria-live="assertive" aria-atomic="true" id="commstoast" data-autohide="false">
+        <div class="toast-header">
+            <strong class="mr-auto">Info</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+            <p>CTRL+Click on the map to measure distance.<br>
+                <small>(Points can be removed by clicking them)</small>
+            </p>
+        </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- blue comm Modal -->
+<div class="modal fade" id="commsModalBlue" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Communications</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            COMM CHANNELS:<br>
+            ATC: 254.000<br>
+            GCI: 251.000<br>
+            ----------------------------------------------------------------------<br>
+            EWRs: 124.000<br>
+            E-3A AWACS (Magic 1-1): 251.000<br>
+            <br>
+            KC-135MPRS Tanker (Texaco 1-1): 141.000, TACAN: 41Y<br>
+            KC-135 Tanker  (Texaco 2-1): 142.000, TACAN: 42X<br>
+            <br>
+            AFAC Pontiac 1-1: 133.000<br>
+            <br>
+            Carrier: 127.500, TACAN 73X, ICLS Channel 1<br>
+            <br>
+            NOTE: We use the same SRS frequency for Human GCI as the AWACs.<br>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- blue comm Modal -->
+<div class="modal fade" id="commsModalRed" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Communications</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            COMM CHANNELS:<br>
+            ATC: 251.000<br>
+            GCI: 121.000<br>
+            ----------------------------------------------------------------------<br>
+            EWRs: 124.000<br>
+            E-3 AWACS (Magic 1-1): 121.000<br>
+            <br>
+            KC-135MPRS Tanker (Texaco 1-1): 141.000, TACAN: 41Y<br>
+            KC-135 Tanker (Texaco 2-1): 142.000, TACAN: 42Y<br>
+            <br>
+            AFAC Pontiac 1-1: 133.000<br>
+            <br>
+            NOTE: We use the same SRS frequency for Human GCI as the AWACs.<br>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script>
+            
+        document.getElementById('team').innerHTML = ''
+        document.getElementById('team').innerHTML= ''
+    
+        $.getJSON('http://127.0.0.1:9595/api/players/blue', function(data) {
+                var i;
+                for (i=0; i < data.length; i++){
+                    document.getElementById('team').innerHTML += '<tr  style="background-color: #0f0f5f;" ><td>' +data[i] + '</tr></td>';
+                }
+                document.getElementById('bluecount').innerHTML = data.length;
+            });
+        $.getJSON('http://127.0.0.1:9595/api/players/red', function(data) {
+            var i;
+            for (i=0; i < data.length; i++){
+                document.getElementById('team').innerHTML += '<tr  style="background-color: #5f0f0f;"><td>' +data[i] + '</tr></td>';
+            }
+                document.getElementById('redcount').innerHTML = data.length;
+        });
+
+        $('#playtoast').on('show.bs.toast', function () {
+        // do something...
+
+        });
+        $(document).ready(function(){$("#playtoast").toast('show');});  
+        $(document).ready(function(){$("#commstoast").toast('show');});   
+    </script>
+</body>
+  
+</html>

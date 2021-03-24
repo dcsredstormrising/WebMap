@@ -1,0 +1,14 @@
+{
+  "baseOwnership": {
+    "Airbases": {
+      "blue": ["bassel_al_assad","al_qusayr","wujah_al_hajar","rayak","beirut_intl","kiryat","ramat_david","megiddo","incirlik"],
+      "neutral": [],
+      "red": ["aleppo", "abu_al_duhur", "minakh", "kuweires", "jirah","hatay","taftanaz","hama","rene_mouawad","an_nasiriyah", "al_dumayr", "marj_as_sultan_n","marj_as_sultan_s", "damascus_intl","qabr_helipt", "mezzeh","marj_ruhayyil","khalkhalah"]
+    },
+    "FARPs": {
+      "blue": [],
+      "neutral": [],
+      "red": []
+    }
+  }
+}

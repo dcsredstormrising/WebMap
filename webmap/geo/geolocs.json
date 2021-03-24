@@ -1,0 +1,467 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Incirlik",
+        "side":"turkey"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.42583333333333,
+          37.00194444444445
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Adana Sakirpasa",
+        "side":"turkey"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.280277777777776,
+          36.981944444444444
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Hatay",
+        "side":"turkey"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.285,
+          36.36027777777778
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Minakh",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.04111111111111,
+          36.52194444444444
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Aleppo",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.22416666666667,
+          36.18055555555555
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Kuweires",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.58305555555556,
+          36.18694444444444
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Jirah",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.94027777777777,
+          36.097500000000004
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Taftanaz",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.783055555555556,
+          35.97222222222222
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Abu al-Duhur",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.10166666666667,
+          35.73277777777778
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"tabqa",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          38.56666666666667,
+          35.754444444444445
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Bassel Al-Assad",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.948611111111106,
+          35.40083333333333
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Hama",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.711111111111116,
+          35.11805555555556
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Al Qusayr",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [ 
+          36.572778,
+		  34.568889
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"palymyra",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          38.31666666666667,
+          34.55722222222222
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"An Nasiriyah",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.86638888888889,
+          33.91888888888889
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Al-Dumayr",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.74888888888889,
+          33.60944444444445
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Mezzeh",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.223333333333336,
+          33.4775
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Marj as Sultan North",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.466944444444444,
+          33.500277777777775
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Marj as Sultan South",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.47527777777778,
+          33.48694444444445
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Qabr as Sitt",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.3575,
+          33.45861111111111
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Damascus",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.51555555555556,
+          33.41138888888889
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Marj Ruhayyil",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.45722222222223,
+          33.28638888888889
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Khalkhalah",
+        "side":"syria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.558055555555555,
+          33.077222222222225
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Rene Mouawad",
+        "side":"lebanon"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.01138888888889,
+          34.589444444444446
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Wujah Al Hajar",
+        "side":"lebanon"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.680277777777775,
+          34.28333333333333
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Beirut-Rafic Hariri",
+        "side":"lebanon"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.48833333333334,
+          33.821111111111115
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Rayak",
+        "side":"lebanon"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.99027777777778,
+          33.852222222222224
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Kiryat Shmona",
+        "side":"israel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.59666666666667,
+          33.21666666666667
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"haifa_intl",
+        "side":"israel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.043055555555554,
+          32.80916666666666
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Ramat David",
+        "side":"israel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.17944444444444,
+          32.665
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"Megiddo",
+        "side":"israel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.228611111111114,
+          32.59722222222222
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"eyn_shemer",
+        "side":"israel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.0075,
+          32.440555555555555
+        ]
+      }
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "baseName":"King Hussein Air College",
+        "side":"jordan"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.259166666666665,
+          32.35638888888889
+        ]
+      }
+    }
+  ]
+}
